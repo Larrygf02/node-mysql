@@ -48,4 +48,78 @@ app.get('/persons', (req, res) => {
     })
 })
 
+app.get('/person/:id/', (req, res) => {
+    let id = req.params.id;
+    con.query('SELECT * FROM persons WHERE ID = ?', [id], (err, results) => {
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                err: {
+                    message: 'Error en consulta'
+                }
+            })
+        }else if (results.length == 0){
+            res.json({
+                ok: true,
+                data: results,
+                message:  `No existe usuario con id ${id}`
+            })
+        }else{
+            res.json({
+                ok: true,
+                data: results
+            })
+        }
+    })
+})
+
+app.put('/person/:id/', (req,res) => {
+    let body = req.body;
+    let id = req.params.id;
+    //verificar si existe
+    con.query('SELECT * FROM persons WHERE id = ?', [id], (err, results) => {
+        if (results.length == 0) {
+            return res.json({
+                ok: true,
+                message: 'No existe usuario'
+            })
+        }else{
+            const { name, surname, telefono } = results[0]
+            if (body.name === undefined) {
+                this_name = name;
+            }else {
+                this_name = body.name
+            }
+
+            if (body.surname === undefined) {
+                this_surname = surname;
+            }else {
+                this_surname = body.surname;
+            }
+
+            if (body.telefono === undefined) {
+                this_telefono = telefono;
+            }else {
+                this_telefono = body.telefono;
+            }
+            
+            con.query('UPDATE persons SET name = ?, surname = ?, telefono = ? WHERE id = ?', [this_name, this_surname, this_telefono, id], (err, results) => {
+                if (err) {
+                    return res.status(500).json({
+                        ok: false,
+                        err: {
+                            message: 'Error en consulta'
+                        }
+                    })
+                }else{
+                    res.json({
+                        ok: true,
+                        message: 'Persona actualizada correctamente'
+                    })
+                }
+            })
+        }
+    })
+})
+
 module.exports = app;
