@@ -85,24 +85,10 @@ app.put('/person/:id/', (req,res) => {
             })
         }else{
             const { name, surname, telefono } = results[0]
-            if (body.name === undefined) {
-                this_name = name;
-            }else {
-                this_name = body.name
-            }
+            let this_name = (body.name === undefined ? name: body.name);
+            let this_surname = (body.surname === undefined ? surname: body.surname);
+            let this_telefono = (body.telefono === undefined ? telefono: body.telefono);
 
-            if (body.surname === undefined) {
-                this_surname = surname;
-            }else {
-                this_surname = body.surname;
-            }
-
-            if (body.telefono === undefined) {
-                this_telefono = telefono;
-            }else {
-                this_telefono = body.telefono;
-            }
-            
             con.query('UPDATE persons SET name = ?, surname = ?, telefono = ? WHERE id = ?', [this_name, this_surname, this_telefono, id], (err, results) => {
                 if (err) {
                     return res.status(500).json({
